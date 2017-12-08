@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                           http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+                           http://www.springframework.org/schema/context 
+                           http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+    <context:component-scan base-package="com.metropolitan.it355.controller" />
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/" />
+        <property name="suffix" value=".jsp" />
+    </bean>
+    <bean id="logAspect" class="com.metropolitan.it355.aspect.InterceptorLog" />
+    <bean id="logPointcutAdvisor" class="org.springframework.aop.support.NameMatchMethodPointcutAdvisor">
+        <property name="advice" ref="logAspect" />
+        <property name="mappedName">
+            <value>*</value>
+        </property>
+    </bean>
+    <bean id="testServiceProxy" class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+        <property name="beanNames" value="NekretnineDao" />
+        <property name="interceptorNames">
+            <list>
+                <value>logPointcutAdvisor</value>
+            </list>
+        </property>
+    </bean>
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <value>/WEB-INF/lang/nekretnine</value>
+            </list>
+        </property>
+        <property name="defaultEncoding" value="UTF-8"/>
+    </bean>
+    <bean id="nekretnineDao" class ="com.metropolitan.it355.dao.impl.NekretnineDaoImpl"/>
+
+</beans>
